@@ -3,7 +3,7 @@ Research Synthesis Agent
 Reads all processed features CSVs + regression outputs, then uses Claude to
 write an updated findings section and flag any changes from the previous run.
 
-Run this after each new batch is processed:
+after each new batch is processed:
     python synthesis_agent.py
 """
 
@@ -183,7 +183,7 @@ def run_synthesis_agent(stats, regression, previous=None):
 === PREVIOUS SYNTHESIS (for comparison) ===
 {previous_str}
 
-=== YOUR TASKS ===
+=== Tasks To Do ===
 
 1. FINDINGS UPDATE (2-3 paragraphs, research language):
    Write an updated findings section covering:
