@@ -1,1341 +1,659 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Artist Submission Portal — EnSet Ventures</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Tenor+Sans&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<title>Hospital Review Study</title>
+<meta name="description" content="Demographic predictors of hospital ratings across California — live research dashboard">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --cream:   #F7F3EE;
-    --warm:    #EDE7DC;
-    --gold:    #B8962E;
-    --gold-lt: #D4B55A;
-    --ink:     #1A1714;
-    --charcoal:#3A3530;
-    --mid:     #7A736B;
-    --border:  #D5CDC3;
-    --red:     #8B2E2E;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--cream);
-    color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-
-  /* ── GRAIN OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-
-  /* ── HEADER ── */
-  .site-header {
-    position: relative;
-    background: var(--ink);
-    color: var(--cream);
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .header-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 80% 50%, rgba(184,150,46,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 10% 80%, rgba(184,150,46,0.08) 0%, transparent 50%);
-  }
-
-  .header-inner {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 64px 40px 56px;
-  }
-
-  .logo-line {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 32px;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.1s;
-  }
-
-  .logo-mark {
-    width: 36px;
-    height: 36px;
-    border: 1.5px solid var(--gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    color: var(--gold);
-    letter-spacing: 0.05em;
-    flex-shrink: 0;
-  }
-
-  .logo-text {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold-lt);
-  }
-
-  .header-eyebrow {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 16px;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.2s;
-  }
-
-  .header-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(38px, 6vw, 64px);
-    font-weight: 300;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: fadeUp 0.9s ease forwards 0.3s;
-  }
-
-  .header-title em {
-    font-style: italic;
-    color: var(--gold-lt);
-  }
-
-  .header-sub {
-    font-size: 15px;
-    color: rgba(247,243,238,0.65);
-    max-width: 560px;
-    line-height: 1.7;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.45s;
-  }
-
-  .header-rule {
-    width: 48px;
-    height: 1px;
-    background: var(--gold);
-    margin: 28px 0;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.5s;
-  }
-
-  /* ── MAIN LAYOUT ── */
-  .portal-wrap {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 64px 40px 100px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ── SECTION TITLES ── */
-  .section-label {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 10.5px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 10px;
-  }
-
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 6px;
-  }
-
-  .section-desc {
-    font-size: 14px;
-    color: var(--mid);
-    margin-bottom: 32px;
-    line-height: 1.65;
-    max-width: 540px;
-  }
-
-  /* ── PROGRAM CARDS ── */
-  .programs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 48px;
-  }
-
-  @media (max-width: 640px) {
-    .programs-grid { grid-template-columns: 1fr; }
-  }
-
-  .program-card {
-    position: relative;
-    background: white;
-    border: 1.5px solid var(--border);
-    border-radius: 3px;
-    padding: 22px 22px 22px 60px;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-    user-select: none;
-  }
-
-  .program-card:hover {
-    border-color: var(--gold);
-    box-shadow: 0 4px 20px rgba(184,150,46,0.1);
-    transform: translateY(-1px);
-  }
-
-  .program-card.selected {
-    border-color: var(--gold);
-    background: #FEFCF7;
-    box-shadow: 0 4px 24px rgba(184,150,46,0.14);
-  }
-
-  .program-card input[type="checkbox"] {
-    position: absolute;
-    top: 22px;
-    left: 20px;
-    width: 18px;
-    height: 18px;
-    accent-color: var(--gold);
-    cursor: pointer;
-  }
-
-  .card-tag {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 9.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--mid);
-    margin-bottom: 6px;
-  }
-
-  .card-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.2;
-    margin-bottom: 6px;
-  }
-
-  .card-desc {
-    font-size: 12.5px;
-    color: var(--mid);
-    line-height: 1.55;
-    margin-bottom: 12px;
-  }
-
-  .card-price {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .price-amount {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--gold);
-  }
-
-  .price-note {
-    font-size: 11.5px;
-    color: var(--mid);
-  }
-
-  .selected-check {
-    position: absolute;
-    top: 20px;
-    right: 18px;
-    width: 20px;
-    height: 20px;
-    background: var(--gold);
-    border-radius: 50%;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 11px;
-  }
-
-  .program-card.selected .selected-check {
-    display: flex;
-  }
-
-  /* ── RUNNING TOTAL ── */
-  .total-bar {
-    background: var(--ink);
-    color: var(--cream);
-    border-radius: 3px;
-    padding: 20px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 56px;
-    position: sticky;
-    top: 16px;
-    z-index: 10;
-    box-shadow: 0 8px 32px rgba(26,23,20,0.18);
-    transition: all 0.3s ease;
-  }
-
-  .total-left {
-    font-size: 13px;
-    color: rgba(247,243,238,0.6);
-    letter-spacing: 0.05em;
-  }
-
-  .total-left strong {
-    display: block;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 10.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 2px;
-    font-weight: 400;
-  }
-
-  .total-selections {
-    font-size: 13px;
-    color: rgba(247,243,238,0.5);
-    font-style: italic;
-  }
-
-  .total-amount {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 36px;
-    font-weight: 300;
-    color: var(--gold-lt);
-    letter-spacing: -0.01em;
-  }
-
-  .total-zero { color: rgba(247,243,238,0.25); }
-
-  /* ── DIVIDER ── */
-  .form-divider {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin: 48px 0 40px;
-  }
-
-  .form-divider::before,
-  .form-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .form-divider-text {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--mid);
-    white-space: nowrap;
-  }
-
-  /* ── FORM FIELDS ── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-
-  @media (max-width: 600px) {
-    .form-grid { grid-template-columns: 1fr; }
-  }
-
-  .form-grid.full { grid-template-columns: 1fr; }
-
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-
-  .field-group.span-2 { grid-column: 1 / -1; }
-
-  label {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--charcoal);
-  }
-
-  label .req {
-    color: var(--gold);
-    margin-left: 3px;
-  }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="url"],
-  select,
-  textarea {
-    background: white;
-    border: 1.5px solid var(--border);
-    border-radius: 2px;
-    padding: 11px 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--ink);
-    width: 100%;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    outline: none;
-    -webkit-appearance: none;
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(184,150,46,0.1);
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: rgba(122,115,107,0.45);
-    font-style: italic;
-    font-size: 13px;
-  }
-
-  textarea { resize: vertical; min-height: 110px; }
-
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A736B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 38px;
-    cursor: pointer;
-  }
-
-  /* ── WHOLESALE CONFIRMATION ── */
-  .confirm-block {
-    background: white;
-    border: 1.5px solid var(--border);
-    border-radius: 3px;
-    padding: 22px 24px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    margin-bottom: 20px;
-  }
-
-  .confirm-block:hover { border-color: var(--gold); }
-
-  .confirm-block input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--gold);
-    flex-shrink: 0;
-    margin-top: 2px;
-    cursor: pointer;
-  }
-
-  .confirm-text {
-    font-size: 13.5px;
-    color: var(--charcoal);
-    line-height: 1.6;
-  }
-
-  .confirm-text strong {
-    display: block;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink);
-    margin-bottom: 4px;
-    font-weight: 400;
-  }
-
-
-
-  /* ── SOCIAL FIELDS ── */
-  .social-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 14px;
-  }
-
-  @media (max-width: 600px) {
-    .social-row { grid-template-columns: 1fr 1fr; }
-  }
-
-  .social-field {
-    position: relative;
-  }
-
-  .social-prefix {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 15px;
-    color: var(--gold);
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .social-field input {
-    padding-left: 30px;
-  }
-
-  /* ── ORDER SUMMARY ── */
-  .order-summary {
-    background: white;
-    border: 1.5px solid var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 32px;
-  }
-
-  .order-summary-header {
-    background: var(--ink);
-    padding: 16px 24px;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-
-  .order-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 24px;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--charcoal);
-  }
-
-  .order-line:last-child { border-bottom: none; }
-
-  .order-line.total-line {
-    background: #FEFCF7;
-    padding: 18px 24px;
-  }
-
-  .order-line.total-line .line-name {
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink);
-    font-weight: 400;
-  }
-
-  .order-line.total-line .line-price {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px;
-    color: var(--gold);
-  }
-
-  .line-price {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    color: var(--gold);
-    flex-shrink: 0;
-  }
-
-  .order-empty {
-    padding: 28px 24px;
-    text-align: center;
-    font-size: 13px;
-    color: var(--mid);
-    font-style: italic;
-  }
-
-  /* ── SUBMIT BUTTON ── */
-  .submit-section {
-    text-align: center;
-  }
-
-  .submit-note {
-    font-size: 12.5px;
-    color: var(--mid);
-    margin-bottom: 20px;
-    line-height: 1.65;
-  }
-
-  .submit-note a {
-    color: var(--gold);
-    text-decoration: none;
-  }
-
-  .btn-submit {
-    background: var(--ink);
-    color: var(--cream);
-    border: none;
-    padding: 18px 64px;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 2px;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.25s, transform 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .btn-submit::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(184,150,46,0.15), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-
-  .btn-submit:hover {
-    background: #2C2822;
-    transform: translateY(-1px);
-  }
-
-  .btn-submit:hover::before {
-    transform: translateX(100%);
-  }
-
-  .btn-submit:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .btn-submit .arrow {
-    font-size: 16px;
-    transition: transform 0.2s;
-  }
-
-  .btn-submit:hover .arrow {
-    transform: translateX(4px);
-  }
-
-  /* ── STRIPE NOTE ── */
-  .stripe-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin-top: 18px;
-    font-size: 11.5px;
-    color: var(--mid);
-  }
-
-  .stripe-badge svg {
-    opacity: 0.5;
-  }
-
-  /* ── SUCCESS STATE ── */
-  .success-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(26,23,20,0.92);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-
-  .success-overlay.show {
-    display: flex;
-    animation: fadeIn 0.4s ease;
-  }
-
-  .success-card {
-    background: var(--cream);
-    padding: 60px 56px;
-    max-width: 480px;
-    width: 90%;
-    text-align: center;
-    border-radius: 3px;
-    animation: scaleIn 0.4s ease;
-  }
-
-  .success-icon {
-    width: 60px;
-    height: 60px;
-    border: 1.5px solid var(--gold);
-    border-radius: 50%;
-    margin: 0 auto 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: var(--gold);
-  }
-
-  .success-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 300;
-    margin-bottom: 12px;
-  }
-
-  .success-sub {
-    font-size: 14px;
-    color: var(--mid);
-    line-height: 1.65;
-    margin-bottom: 28px;
-  }
-
-  .btn-close {
-    background: var(--ink);
-    color: var(--cream);
-    border: none;
-    padding: 13px 36px;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 2px;
-  }
-
-  /* ── FOOTER ── */
-  .site-footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 40px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--mid);
-    position: relative;
-    z-index: 1;
-  }
-
-  .site-footer a { color: var(--gold); text-decoration: none; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.94); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-
-  .fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-
-  .fade-in.visible {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* ── VALIDATION ── */
-  .field-group.error input,
-  .field-group.error select,
-  .field-group.error textarea {
-    border-color: var(--red);
-  }
-
-  .error-msg {
-    font-size: 11.5px;
-    color: var(--red);
-    display: none;
-  }
-
-  .field-group.error .error-msg { display: block; }
-
-  .form-error-banner {
-    background: #FDF0F0;
-    border: 1px solid #E8BABA;
-    border-radius: 2px;
-    padding: 14px 20px;
-    font-size: 13.5px;
-    color: var(--red);
-    margin-bottom: 20px;
-    display: none;
-  }
-
-  .form-error-banner.show { display: block; }
+/* ── tokens ── */
+:root {
+  --bg: #f8f7f5;
+  --surface: #ffffff;
+  --surface2: #f1efe9;
+  --border: #e2dfd7;
+  --fg: #1a1917;
+  --fg2: #4a4844;
+  --fg3: #8a8680;
+  --accent: #2563eb;
+  --accent-dim: #dbeafe;
+  --good: #16a34a;
+  --warn: #d97706;
+  --bad: #dc2626;
+  --kaiser: #2563eb;
+  --privnp: #7c3aed;
+  --pubacad: #0891b2;
+  --safety: #dc2626;
+  --va: #16a34a;
+  --lta: #d97706;
+  --psych: #db2777;
+  --other: #64748b;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141310;
+    --surface: #1e1c19;
+    --surface2: #252320;
+    --border: #302e2a;
+    --fg: #f0ede8;
+    --fg2: #b8b4ae;
+    --fg3: #6b6760;
+    --accent: #3b82f6;
+    --accent-dim: #1e3a5f;
+    --good: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141310;
+  --surface: #1e1c19;
+  --surface2: #252320;
+  --border: #302e2a;
+  --fg: #f0ede8;
+  --fg2: #b8b4ae;
+  --fg3: #6b6760;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+  color-scheme: dark;
+}
+
+/* ── reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  padding-inline: 16px;
+  padding-block: 24px;
+  min-height: 100%;
+}
+
+/* ── layout ── */
+.page { max-width: 1080px; margin-inline: auto }
+.header { margin-bottom: 36px }
+.header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap }
+.logo { display: flex; align-items: center; gap: 10px }
+.logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent) }
+.site-title { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: var(--fg) }
+.site-sub { font-size: 0.78rem; color: var(--fg3); margin-top: 2px; font-family: 'JetBrains Mono', monospace }
+.header-meta { font-size: 0.72rem; color: var(--fg3); text-align: right; line-height: 1.7 }
+.header-meta a { color: var(--accent); text-decoration: none }
+.header-meta a:hover { text-decoration: underline }
+
+h1 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; text-wrap: balance; margin-bottom: 10px }
+.subtitle { font-size: 0.9rem; color: var(--fg2); max-width: 620px; line-height: 1.6 }
+
+.divider { height: 1px; background: var(--border); margin-block: 32px }
+
+/* ── stat tiles ── */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 40px }
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.tile-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg3); margin-bottom: 6px }
+.tile-value { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--fg); line-height: 1 }
+.tile-note { font-size: 0.72rem; color: var(--fg3); margin-top: 5px }
+.tile.accent { border-color: var(--accent); }
+.tile.accent .tile-value { color: var(--accent) }
+
+/* ── section headers ── */
+.section { margin-bottom: 40px }
+.section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px }
+.section-head h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em }
+.badge {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  background: var(--accent-dim); color: var(--accent);
+  padding: 2px 7px; border-radius: 999px;
+}
+.section-note { font-size: 0.78rem; color: var(--fg3); margin-bottom: 14px; line-height: 1.5 }
+
+/* ── chart cards ── */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+.chart-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px }
+.chart-sub { font-size: 0.72rem; color: var(--fg3); margin-bottom: 16px }
+.charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
+@media (max-width: 640px) { .charts-2col { grid-template-columns: 1fr } }
+
+/* ── bar chart ── */
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px }
+.bar-label { font-size: 0.75rem; color: var(--fg2); width: 120px; flex-shrink: 0; text-align: right; line-height: 1.3 }
+@media (max-width: 480px) { .bar-label { width: 90px; font-size: 0.68rem } }
+.bar-track { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; position: relative; min-width: 0 }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(.4,0,.2,1) }
+.bar-val { font-size: 0.72rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg2); width: 34px; flex-shrink: 0 }
+
+/* ── dot plot (interaction) ── */
+.dot-plot { display: flex; flex-direction: column; gap: 10px }
+.dot-group { display: flex; align-items: center; gap: 10px }
+.dot-label { font-size: 0.75rem; color: var(--fg2); width: 80px; flex-shrink: 0; text-align: right }
+.dot-track { position: relative; flex: 1; height: 28px; min-width: 0 }
+.dot-track-line { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); transform: translateY(-50%) }
+.dot-mark {
+  position: absolute; top: 50%; width: 11px; height: 11px;
+  border-radius: 50%; transform: translate(-50%, -50%);
+  border: 2px solid var(--surface);
+}
+.dot-val { font-size: 0.72rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg2); width: 30px; flex-shrink: 0 }
+.dot-legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap }
+.dot-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--fg2) }
+.dot-legend-dot { width: 9px; height: 9px; border-radius: 50% }
+
+/* ── scatter/correlation ── */
+.scatter-wrap { position: relative }
+.scatter-wrap svg { width: 100%; height: auto; display: block }
+
+/* ── regression table ── */
+.reg-table { width: 100%; border-collapse: collapse; font-size: 0.78rem }
+.reg-table th { text-align: left; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--fg3); padding: 6px 8px; border-bottom: 1px solid var(--border) }
+.reg-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; vertical-align: middle }
+.reg-table tr:last-child td { border-bottom: none }
+.sig { color: var(--good); font-weight: 600 }
+.ns { color: var(--fg3) }
+.pval-bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); margin-left: 6px; vertical-align: middle }
+
+/* ── findings narrative ── */
+.narrative {
+  background: var(--surface2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 18px;
+  font-size: 0.83rem;
+  line-height: 1.7;
+  color: var(--fg2);
+  white-space: pre-wrap;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.narrative.loading { color: var(--fg3); font-style: italic }
+
+/* ── market status ── */
+.market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px }
+.market-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.market-icon { font-size: 1.1rem; flex-shrink: 0 }
+.market-name { font-size: 0.85rem; font-weight: 600 }
+.market-count { font-size: 0.72rem; color: var(--fg3) }
+.status-pill {
+  margin-left: auto; font-size: 0.65rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 2px 7px; border-radius: 999px;
+}
+.status-done { background: #dcfce7; color: #16a34a }
+.status-pending { background: #fef9c3; color: #92400e }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .status-done { background: #14532d; color: #86efac }
+  :root:not([data-theme="light"]) .status-pending { background: #422006; color: #fcd34d }
+}
+:root[data-theme="dark"] .status-done { background: #14532d; color: #86efac }
+:root[data-theme="dark"] .status-pending { background: #422006; color: #fcd34d }
+
+/* ── footer ── */
+.footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--fg3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px }
+.footer a { color: var(--accent); text-decoration: none }
+
+/* ── tooltip ── */
+.tooltip {
+  position: fixed; pointer-events: none; z-index: 100;
+  background: var(--fg); color: var(--bg);
+  font-size: 0.72rem; padding: 5px 9px; border-radius: 6px;
+  white-space: nowrap; opacity: 0; transition: opacity 0.1s;
+  transform: translate(-50%, -110%);
+}
+.tooltip.show { opacity: 1 }
+
+/* ── stale notice ── */
+.stale-notice {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; font-size: 0.75rem;
+  color: var(--fg3); margin-bottom: 28px; display: none;
+}
+.stale-notice.show { display: block }
 </style>
-</head>
-<body>
 
-<!-- ── HEADER ── -->
-<header class="site-header">
-  <div class="header-bg"></div>
-  <div class="header-inner">
-    <div class="logo-line">
-      <div class="logo-mark">E</div>
-      <span class="logo-text">EnSet Ventures</span>
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div>
+        <div class="logo"><div class="logo-dot"></div><span class="site-title">hospital-review-study</span></div>
+        <div class="site-sub">jayk236.github.io/hospital-review-study</div>
+      </div>
+      <div class="header-meta">
+        <div>Jayanth Karuturi · <a href="mailto:jayanthkaruturi@gmail.com">jayanthkaruturi@gmail.com</a></div>
+        <div id="last-updated">Loading…</div>
+        <div><a href="https://github.com/JayK236/hospital-review-study" target="_blank">GitHub ↗</a></div>
+      </div>
     </div>
-    <p class="header-eyebrow">Creative Arts Direct-to-Buyer Advancement Program</p>
-    <h1 class="header-title">
-      Artist &amp; Brand<br/><em>Submission Portal</em>
-    </h1>
-    <div class="header-rule"></div>
-    <p class="header-sub">
-      Select your placement pathways below, complete your profile, and submit your application.
-      Access is confirmed upon payment. All placements are curated and capacity-limited.
-    </p>
+    <div class="divider"></div>
+    <h1>Modeling Demographic Predictors of Online Hospital Ratings</h1>
+    <p class="subtitle">Do reviewer role, gender, and review length systematically predict hospital star ratings independent of care quality? Analysis of <span id="n-reviews">—</span> Google Reviews across California.</p>
+  </header>
+
+  <div class="stale-notice" id="stale-notice">
+    ⚠ Live data unavailable — showing embedded fallback figures from last synthesis run. Push a new <code>data.json</code> to update.
   </div>
-</header>
 
-<!-- ── PORTAL FORM ── -->
-<main class="portal-wrap">
-  <form id="submissionForm" novalidate>
-
-    <!-- PLACEMENT SELECTION -->
-    <div class="fade-in">
-      <p class="section-label">Step 1 of 3</p>
-      <h2 class="section-title">Select Your Placements</h2>
-      <p class="section-desc">Choose one or more programs. Your total updates automatically. Placements are subject to curatorial review and confirmed upon payment.</p>
-
-      <div class="programs-grid">
-
-        <label class="program-card" id="card-showcase">
-          <input type="checkbox" name="placements" value="showcase" data-price="350" data-name="Style Showcase at FMNC" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Gallery · March 29, 2026</p>
-          <p class="card-name">Style Showcase<br/>at FMNC</p>
-          <p class="card-desc">Embassy Suites. Presentation to museum gift buyers, hotel retail buyers, gallery shops, and boutique wholesale stores.</p>
-          <div class="card-price">
-            <span class="price-amount">$350</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-influencer">
-          <input type="checkbox" name="placements" value="influencer" data-price="450" data-name="Influencer-Hosted Event" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Event · High-Profile</p>
-          <p class="card-name">Influencer-Hosted<br/>Event Placement</p>
-          <p class="card-desc">Placement into curated events hosting 15–30 high-profile accomplished influencers in a professional production setting.</p>
-          <div class="card-price">
-            <span class="price-amount">$450</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-hnw">
-          <input type="checkbox" name="placements" value="hnw" data-price="500" data-name="HNW VIP Event Placement" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">VIP · High-Net-Worth</p>
-          <p class="card-name">HNW VIP<br/>Event Placement</p>
-          <p class="card-desc">Booking into venues with High-Net-Worth VIP audiences. Relationship-building and refined brand positioning.</p>
-          <div class="card-price">
-            <span class="price-amount">$500</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-lsbuyer">
-          <input type="checkbox" name="placements" value="ls-buyer" data-price="400" data-name="Live Stream – Private Buyer Meetings" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Live Stream · Private</p>
-          <p class="card-name">Live Stream — Private<br/>Buyer Meetings</p>
-          <p class="card-desc">Direct private live stream access connecting artists with institutional buyers actively sourcing art and design objects.</p>
-          <div class="card-price">
-            <span class="price-amount">$400</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-lsmuseum">
-          <input type="checkbox" name="placements" value="ls-museum" data-price="375" data-name="Live Stream – Museum & Gallery Gift Shop Insert" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Live Stream · Museum</p>
-          <p class="card-name">Live Stream — Museum<br/>&amp; Gallery Gift Shop</p>
-          <p class="card-desc">Live stream insert placement with museum and gallery gift shop buyers. Curated program lineup, content-led format.</p>
-          <div class="card-price">
-            <span class="price-amount">$375</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-lslounge">
-          <input type="checkbox" name="placements" value="ls-lounge" data-price="325" data-name="Live Stream – Showcase Gallery Lounge" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Live Stream · Feature</p>
-          <p class="card-name">Live Stream — Showcase<br/>Gallery Lounge</p>
-          <p class="card-desc">Feature placement within the LuLur Experiences Showcase Gallery Lounge live stream. Broadcast-integrated buyer engagement.</p>
-          <div class="card-price">
-            <span class="price-amount">$325</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-gift">
-          <input type="checkbox" name="placements" value="gift" data-price="600" data-name="Buyer Hospitality Gift Experience" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Hospitality · VIP Gift</p>
-          <p class="card-name">Buyer Hospitality<br/>Gift Experience</p>
-          <p class="card-desc">Product placement into curated VIP gift experiences (7–11 items) given to profile influencers and select museum buyers. Spring Floral &amp; Chocolate Festival theme.</p>
-          <div class="card-price">
-            <span class="price-amount">$600</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-buyer">
-          <input type="checkbox" name="placements" value="buyer" data-price="425" data-name="Direct Buyer Shopping Sessions" />
-          <div class="selected-check">✓</div>
-          <p class="card-tag">Buyer Access · Direct</p>
-          <p class="card-name">Direct Buyer<br/>Shopping Sessions</p>
-          <p class="card-desc">Connects your work with buyers actively sourcing art, textiles, jewelry, specialty gifts, and finished art objects. Structured as an experience, not a pitch.</p>
-          <div class="card-price">
-            <span class="price-amount">$425</span>
-            <span class="price-note">per artist</span>
-          </div>
-        </label>
-
-        <label class="program-card" id="card-statechange" style="grid-column: 1 / -1; border-color: #B8962E; background: linear-gradient(135deg, #FEFCF7 0%, #FDF8EE 100%);">
-          <input type="checkbox" name="placements" value="statechange" data-price="550" data-name="State Change VIP Gift Experience" />
-          <div class="selected-check">&#10003;</div>
-          <p class="card-tag" style="color: #B8962E;">Featured &#xB7; Bouquets to Art 2026 &#xB7; de Young &amp; Legion of Honor</p>
-          <p class="card-name">State Change<br/>VIP Gift Experience</p>
-          <p class="card-desc" style="max-width: 680px;">
-            A curated celebrity VIP hospitality program aligned with the 2026 <em>Bouquets to Art</em> exhibitions at the de Young Museum and Legion of Honor. Select items are placed into a curated gift experience presented to celebrity-profile influencers and museum gift buyers at a private Spring gathering at NEON, San Francisco&#x2019;s Marina District.<br/><br/>
-            Selected brands are acknowledged within the <strong>Lumen Virtual Gallery</strong> broadcast and editorial showcase. Brands may submit editorial imagery or short visual clips for feature within the broadcast.
-          </p>
-          <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:14px;">
-            <div style="font-size:12px; color:#7A736B;"><span style="color:#B8962E;">&#x2726;</span> Celebrity-profile influencer audience</div>
-            <div style="font-size:12px; color:#7A736B;"><span style="color:#B8962E;">&#x2726;</span> Museum gift buyer engagement</div>
-            <div style="font-size:12px; color:#7A736B;"><span style="color:#B8962E;">&#x2726;</span> Lumen Virtual Gallery broadcast feature</div>
-            <div style="font-size:12px; color:#7A736B;"><span style="color:#B8962E;">&#x2726;</span> Editorial imagery / video clip placement</div>
-            <div style="font-size:12px; color:#7A736B;"><span style="color:#B8962E;">&#x2726;</span> Invitation-only &#xB7; NEON &#xB7; Marina District, SF</div>
-          </div>
-          <div class="card-price">
-            <span class="price-amount">$550</span>
-            <span class="price-note">per brand &#xB7; invitation-only</span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- STICKY TOTAL BAR -->
-      <div class="total-bar" id="totalBar">
-        <div>
-          <strong>Submission Total</strong>
-          <span class="total-selections" id="selectionCount">No placements selected</span>
-        </div>
-        <div class="total-amount total-zero" id="totalAmount">$0</div>
-      </div>
+  <!-- Stat tiles -->
+  <div class="tiles">
+    <div class="tile accent">
+      <div class="tile-label">Reviews analyzed</div>
+      <div class="tile-value" id="tile-reviews">—</div>
+      <div class="tile-note" id="tile-markets">— markets</div>
     </div>
-
-    <!-- ARTIST INFO -->
-    <div class="fade-in">
-      <div class="form-divider">
-        <span class="form-divider-text">Step 2 — Artist Profile</span>
-      </div>
-
-      <p class="section-label">Your Information</p>
-      <h2 class="section-title">Artist &amp; Brand Profile</h2>
-      <p class="section-desc">All fields marked <span style="color:var(--gold)">✦</span> are required. This information is used for placement review and program coordination only.</p>
-
-      <div class="form-error-banner" id="formErrorBanner">
-        Please complete all required fields before submitting.
-      </div>
-
-      <!-- Name & Contact -->
-      <div class="form-grid">
-        <div class="field-group" id="fg-firstname">
-          <label>First Name <span class="req">✦</span></label>
-          <input type="text" id="firstName" placeholder="First name" required />
-          <span class="error-msg">Required</span>
-        </div>
-        <div class="field-group" id="fg-lastname">
-          <label>Last Name <span class="req">✦</span></label>
-          <input type="text" id="lastName" placeholder="Last name" required />
-          <span class="error-msg">Required</span>
-        </div>
-        <div class="field-group" id="fg-email">
-          <label>Email Address <span class="req">✦</span></label>
-          <input type="email" id="email" placeholder="your@email.com" required />
-          <span class="error-msg">Valid email required</span>
-        </div>
-        <div class="field-group" id="fg-phone">
-          <label>Phone Number</label>
-          <input type="tel" id="phone" placeholder="+1 (555) 000-0000" />
-        </div>
-      </div>
-
-      <!-- Brand & Web -->
-      <div class="form-grid">
-        <div class="field-group" id="fg-brand">
-          <label>Brand / Artist Name <span class="req">✦</span></label>
-          <input type="text" id="brandName" placeholder="Your brand or artist name" required />
-          <span class="error-msg">Required</span>
-        </div>
-        <div class="field-group" id="fg-website">
-          <label>Website or Portfolio URL <span class="req">✦</span></label>
-          <input type="url" id="website" placeholder="https://yoursite.com" required />
-          <span class="error-msg">Valid URL required</span>
-        </div>
-      </div>
-
-      <!-- Product Category -->
-      <div class="form-grid">
-        <div class="field-group span-2" id="fg-category">
-          <label>Primary Product Category <span class="req">✦</span></label>
-          <select id="category" required>
-            <option value="" disabled selected>Select your primary category</option>
-            <option value="fine-art">Fine Art (Paintings, Prints, Mixed Media)</option>
-            <option value="sculpture">Sculpture &amp; 3D Art Objects</option>
-            <option value="photography">Photography &amp; Digital Art</option>
-            <option value="textiles">Textiles, Scarves &amp; Wearables</option>
-            <option value="jewelry">Jewelry &amp; Accessories</option>
-            <option value="ceramics">Ceramics &amp; Pottery</option>
-            <option value="specialty-gifts">Specialty Gifts &amp; Art Objects</option>
-            <option value="chocolate">Wholesale Chocolate &amp; Culinary</option>
-            <option value="wellness">Wellness &amp; Beauty</option>
-            <option value="home-design">Home Design &amp; Decor</option>
-            <option value="other">Other</option>
-          </select>
-          <span class="error-msg">Please select a category</span>
-        </div>
-      </div>
-
-      <!-- Bio -->
-      <div class="form-grid full">
-        <div class="field-group" id="fg-bio">
-          <label>Artist Statement / Brand Bio <span class="req">✦</span></label>
-          <textarea id="bio" placeholder="Briefly describe your work, aesthetic direction, and what makes your brand distinctive. 150–300 words recommended." required></textarea>
-          <span class="error-msg">Required</span>
-        </div>
-      </div>
-
-      <!-- Social Media -->
-      <div style="margin-bottom: 24px;">
-        <label style="display:block; margin-bottom: 12px;">Social Media Handles</label>
-        <div class="social-row">
-          <div class="social-field">
-            <span class="social-prefix">@</span>
-            <input type="text" id="instagram" placeholder="Instagram" />
-          </div>
-          <div class="social-field">
-            <span class="social-prefix" style="font-size:13px;">in</span>
-            <input type="text" id="linkedin" placeholder="LinkedIn" style="padding-left:30px;" />
-          </div>
-          <div class="social-field">
-            <span class="social-prefix">@</span>
-            <input type="text" id="tiktok" placeholder="TikTok / Other" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Portfolio Link -->
-      <div class="field-group" id="fg-portfolio" style="margin-bottom: 24px;">
-        <label>Portfolio / Product Images Link <span class="req">✦</span></label>
-        <input type="url" id="portfolioLink" placeholder="e.g. https://drive.google.com/... or Dropbox, WeTransfer, website link" />
-        <span style="font-size:12px; color:var(--mid); margin-top:4px; display:block;">Share a link to your portfolio, product images, or lookbook — Google Drive, Dropbox, WeTransfer, or your website all work.</span>
-        <span class="error-msg">Please provide a link to your portfolio or product images</span>
-      </div>
-
-      <!-- Wholesale Confirmation -->
-      <div class="confirm-block" id="wholesaleBlock">
-        <input type="checkbox" id="wholesaleConfirm" required />
-        <div class="confirm-text">
-          <strong>Wholesale Readiness Confirmation</strong>
-          I confirm that I have an established wholesale strategy, understand how to monetize placement opportunities, and am prepared for professional production timelines. I understand EnSet Ventures is not a representative agency but provides structured cultural access and buyer ecosystem placement.
-        </div>
-      </div>
-      <span class="error-msg" id="wholesaleError" style="display:none; margin-bottom: 16px; display:none;">Please confirm your wholesale readiness to proceed</span>
+    <div class="tile">
+      <div class="tile-label">Hospitals</div>
+      <div class="tile-value" id="tile-hospitals">—</div>
+      <div class="tile-note">unique facilities</div>
     </div>
-
-    <!-- ORDER SUMMARY & PAYMENT -->
-    <div class="fade-in">
-      <div class="form-divider">
-        <span class="form-divider-text">Step 3 — Review &amp; Payment</span>
-      </div>
-
-      <p class="section-label">Order Summary</p>
-      <h2 class="section-title">Review Your Submission</h2>
-      <p class="section-desc">Confirm your selected placements. Payment is processed securely via Stripe. Access is confirmed immediately upon successful payment.</p>
-
-      <div class="order-summary">
-        <div class="order-summary-header">Selected Placements</div>
-        <div id="orderLines">
-          <div class="order-empty" id="orderEmpty">No placements selected yet — choose from the options above.</div>
-        </div>
-      </div>
-
-      <div class="submit-section">
-        <p class="submit-note">
-          By submitting, you agree to the <a href="#">Submission Terms</a> and <a href="#">Program Guidelines</a>.<br/>
-          Payments are non-refundable once placement is confirmed. All submissions subject to curatorial review.<br/>
-          Questions? Contact <a href="/cdn-cgi/l/email-protection#bedbd0cddbcac8dbd0cacbccdbcdfed9d3dfd7d290ddd1d3"><span class="__cf_email__" data-cfemail="b7d2d9c4d2c3c1d2d9c3c2c5d2c4f7d0dad6dedb99d4d8da">[email&#160;protected]</span></a> · 415-987-1707
-        </p>
-
-        <button type="submit" class="btn-submit" id="submitBtn">
-          Proceed to Payment
-          <span class="arrow">→</span>
-        </button>
-
-        <div>
-          <span class="stripe-badge">
-            <svg width="36" height="15" viewBox="0 0 36 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4.5 5.4C4.5 4.74 5.04 4.5 5.94 4.5C7.2 4.5 8.82 4.86 10.08 5.52V2.46C8.7 1.92 7.32 1.68 5.94 1.68C2.7 1.68 0.6 3.3 0.6 5.58C0.6 9.18 5.58 8.64 5.58 10.2C5.58 10.98 4.92 11.22 3.96 11.22C2.58 11.22 0.84 10.68 -0.36 9.96V13.02C0.96 13.62 2.28 13.86 3.96 13.86C7.26 13.86 9.48 12.3 9.48 9.96C9.48 6.12 4.5 6.78 4.5 5.4Z" fill="#7A736B"/>
-            </svg>
-            Secured by Stripe · SSL Encrypted
-          </span>
-        </div>
-      </div>
+    <div class="tile">
+      <div class="tile-label">Model R²</div>
+      <div class="tile-value" id="tile-r2">—</div>
+      <div class="tile-note">pooled OLS</div>
     </div>
-
-  </form>
-</main>
-
-<!-- ── SUCCESS OVERLAY ── -->
-<div class="success-overlay" id="successOverlay">
-  <div class="success-card">
-    <div class="success-icon">✓</div>
-    <h2 class="success-title">Submission Received</h2>
-    <p class="success-sub">
-      Thank you for submitting to the EnSet Ventures Creative Arts Program. You will receive a confirmation email shortly with next steps and payment receipt.<br/><br/>
-      <strong>Questions?</strong><br/>
-      <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7a1f14091f0e0c1f140e0f081f093a1d171b131654191517">[email&#160;protected]</a> · 415-987-1707
-    </p>
-    <button class="btn-close" onclick="document.getElementById('successOverlay').classList.remove('show')">Close</button>
+    <div class="tile">
+      <div class="tile-label">Patient premium</div>
+      <div class="tile-value" id="tile-patient">—</div>
+      <div class="tile-note">vs. caretaker (stars)</div>
+    </div>
+    <div class="tile">
+      <div class="tile-label">Review length</div>
+      <div class="tile-value" id="tile-length">—</div>
+      <div class="tile-note">coef per char</div>
+    </div>
   </div>
+
+  <!-- Market status -->
+  <div class="section">
+    <div class="section-head"><h2>Dataset coverage</h2></div>
+    <div class="market-grid" id="market-grid">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Hospital type ratings -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Ratings by hospital type</h2>
+      <span class="badge">Strongest predictor</span>
+    </div>
+    <p class="section-note">Hospital type explains the most variance (R² ≈ 0.23–0.31). Kaiser facilities score 1.7–2.3 stars above public safety-net hospitals after controlling for reviewer characteristics.</p>
+    <div class="chart-card">
+      <div class="chart-title">Mean star rating by hospital type</div>
+      <div class="chart-sub">Bars normalized to 5-star max · hover for exact value</div>
+      <div id="hosp-type-chart"></div>
+    </div>
+  </div>
+
+  <!-- Patient vs caretaker + interaction -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Role &amp; gender effects</h2>
+      <span class="badge">Replicates across markets</span>
+    </div>
+    <p class="section-note">Patients rate higher than caretakers. Male caretakers are the most negative group — the male deficit largely disappears among direct patients. This gender × role interaction replicates independently in both SF (p = 0.009) and Sacramento (p &lt; 0.001).</p>
+    <div class="charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">Patient vs. caretaker ratings</div>
+        <div class="chart-sub">Mean stars by role</div>
+        <div id="role-chart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Gender × role interaction</div>
+        <div class="chart-sub">Mean stars by gender + role</div>
+        <div class="dot-legend">
+          <div class="dot-legend-item"><div class="dot-legend-dot" style="background:#2563eb"></div>Male</div>
+          <div class="dot-legend-item"><div class="dot-legend-dot" style="background:#db2777"></div>Female</div>
+        </div>
+        <div id="interaction-chart" class="dot-plot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review length -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Review length effect</h2>
+    </div>
+    <p class="section-note">Longer reviews consistently predict lower ratings (coef ≈ −0.001/character, p &lt; 0.001 in all models). Consistent with longer reviews reflecting higher emotional arousal or negative experiences.</p>
+    <div class="chart-card">
+      <div class="chart-title">Review length → star rating</div>
+      <div class="chart-sub">Grouped mean ratings by character count bucket · error bars = ±1 SD</div>
+      <div id="length-chart"></div>
+    </div>
+  </div>
+
+  <!-- Regression table -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Pooled OLS coefficients</h2>
+    </div>
+    <div class="chart-card">
+      <div id="reg-table-wrap"></div>
+    </div>
+  </div>
+
+  <!-- Synthesis narrative -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Latest synthesis findings</h2>
+      <span class="badge">Auto-generated</span>
+    </div>
+    <p class="section-note">Generated by research synthesis agent after each data batch. Reflects last <code>synthesis_agent.py</code> run.</p>
+    <div class="narrative" id="narrative">Loading findings…</div>
+  </div>
+
+  <footer class="footer">
+    <div>Independent research · Jayanth Karuturi · <a href="mailto:jayanthkaruturi@gmail.com">jayanthkaruturi@gmail.com</a></div>
+    <div>Data: Outscraper / Google Maps · Analysis: Claude API (Anthropic) + statsmodels OLS</div>
+  </footer>
 </div>
 
-<!-- ── FOOTER ── -->
-<footer class="site-footer">
-  <p>© 2026 EnSet Ventures · <a href="/cdn-cgi/l/email-protection#c3a6adb0a6b7b5a6adb7b6b1a6b083a4aea2aaafeda0acae"><span class="__cf_email__" data-cfemail="acc9c2dfc9d8dac9c2d8d9dec9dfeccbc1cdc5c082cfc3c1">[email&#160;protected]</span></a> · 415-987-1707</p>
-  <p style="margin-top:6px; font-size:11px;">Cultural Access · Hospitality · Broadcast Integration — This is not rep representation.</p>
-</footer>
+<div class="tooltip" id="tooltip"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ── PRICING & SELECTION ──────────────────────────────────────────────────────
-const checkboxes = document.querySelectorAll('input[name="placements"]');
-const totalAmountEl = document.getElementById('totalAmount');
-const selectionCountEl = document.getElementById('selectionCount');
-const orderLinesEl = document.getElementById('orderLines');
-const orderEmptyEl = document.getElementById('orderEmpty');
+<script>
+// ── Fallback data (updated after each synthesis run via data.json) ────────────
+const FALLBACK = {
+  last_updated: "2026-04 (embedded fallback)",
+  total_reviews: 27087,
+  unique_hospitals: 30,
+  markets_processed: ["San Francisco", "Sacramento"],
+  reviews_per_market: { "San Francisco": 14769, "Sacramento": 12318 },
+  r_squared: 0.27,
+  overall_avg_rating: 3.41,
+  avg_rating_by_role: { patient: 3.68, caretaker: 3.12, "patient/caretaker": 3.45, unclear: 3.39 },
+  avg_rating_by_gender_role: {
+    male_patient: 3.72, female_patient: 3.65,
+    male_caretaker: 2.94, female_caretaker: 3.26
+  },
+  hospital_type_ratings: {
+    "Kaiser": 4.12,
+    "Private Nonprofit": 3.52,
+    "Public Academic": 3.18,
+    "VA": 3.05,
+    "Safety Net": 2.41,
+    "Long Term Acute": 2.88,
+    "Psychiatric": 2.75,
+    "Other": 3.21
+  },
+  review_length_buckets: [
+    { label: "0–100", mean: 3.82, sd: 1.21 },
+    { label: "101–300", mean: 3.55, sd: 1.31 },
+    { label: "301–600", mean: 3.28, sd: 1.38 },
+    { label: "601–1000", mean: 3.04, sd: 1.42 },
+    { label: "1000+", mean: 2.71, sd: 1.39 }
+  ],
+  regression: {
+    coef_is_patient: 0.512,
+    pval_is_patient: 0.001,
+    coef_is_male: -0.118,
+    pval_is_male: 0.043,
+    "coef_is_patient:is_male": 0.089,
+    "pval_is_patient:is_male": 0.021,
+    coef_review_length: -0.00092,
+    pval_review_length: 0.0001
+  },
+  narrative: "Analysis of 27,087 reviews across 30 hospital facilities in San Francisco and Sacramento reveals that hospital type is the dominant predictor of online star ratings (pooled OLS R² = 0.27). Kaiser Permanente facilities score 1.71 stars above safety-net hospitals after controlling for reviewer characteristics (p < 0.001). Reviewer role independently predicts ratings: patients rate facilities 0.51 stars higher than caretakers (β = 0.512, p < 0.001). A statistically significant gender × role interaction (β = 0.089, p = 0.021) confirms that male caretakers are the most negative reviewer group, while the male deficit attenuates substantially among direct patients. Review length negatively predicts ratings across all models (β = −0.00092/character, p < 0.001), consistent with longer reviews reflecting elevated negative emotional arousal. Oakland and San Jose markets remain unprocessed (estimated 23,300 additional reviews)."
+};
 
-function updateTotal() {
-  let total = 0;
-  const selected = [];
+// ── Color map ─────────────────────────────────────────────────────────────────
+const TYPE_COLORS = {
+  "Kaiser": "#2563eb",
+  "Private Nonprofit": "#7c3aed",
+  "Public Academic": "#0891b2",
+  "VA": "#16a34a",
+  "Safety Net": "#dc2626",
+  "Long Term Acute": "#d97706",
+  "Psychiatric": "#db2777",
+  "Other": "#64748b"
+};
 
-  checkboxes.forEach(cb => {
-    const card = cb.closest('.program-card');
-    if (cb.checked) {
-      total += parseInt(cb.dataset.price);
-      selected.push({ name: cb.dataset.name, price: cb.dataset.price });
-      card.classList.add('selected');
-    } else {
-      card.classList.remove('selected');
-    }
-  });
+// ── Load data.json or fall back ───────────────────────────────────────────────
+let DATA = null;
 
-  // Update total bar
-  totalAmountEl.textContent = '$' + total.toLocaleString();
-  totalAmountEl.classList.toggle('total-zero', total === 0);
-
-  if (selected.length === 0) {
-    selectionCountEl.textContent = 'No placements selected';
-  } else {
-    selectionCountEl.textContent = selected.length + ' placement' + (selected.length > 1 ? 's' : '') + ' selected';
+async function loadData() {
+  try {
+    const res = await fetch('data.json?v=' + Date.now());
+    if (!res.ok) throw new Error('not found');
+    DATA = await res.json();
+  } catch {
+    DATA = FALLBACK;
+    document.getElementById('stale-notice').classList.add('show');
   }
-
-  // Update order summary
-  if (selected.length === 0) {
-    orderLinesEl.innerHTML = '<div class="order-empty" id="orderEmpty">No placements selected yet — choose from the options above.</div>';
-  } else {
-    let html = selected.map(s => `
-      <div class="order-line">
-        <span class="line-name">${s.name}</span>
-        <span class="line-price">$${parseInt(s.price).toLocaleString()}</span>
-      </div>
-    `).join('');
-    html += `
-      <div class="order-line total-line">
-        <span class="line-name">Total Due Today</span>
-        <span class="line-price">$${total.toLocaleString()}</span>
-      </div>
-    `;
-    orderLinesEl.innerHTML = html;
-  }
+  render();
 }
 
-checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
-
-// Portfolio link field — no upload handling needed
-
-// ── SCROLL ANIMATIONS ────────────────────────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-// ── FORM VALIDATION ──────────────────────────────────────────────────────────
-function validateField(id, fgId, check) {
-  const val = document.getElementById(id)?.value?.trim();
-  const fg = document.getElementById(fgId);
-  if (!fg) return true;
-  const ok = check(val);
-  fg.classList.toggle('error', !ok);
-  return ok;
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+function showTooltip(e, text) {
+  tooltip.textContent = text;
+  tooltip.classList.add('show');
+  moveTooltip(e);
 }
+function moveTooltip(e) {
+  tooltip.style.left = e.clientX + 'px';
+  tooltip.style.top = (e.clientY - 8) + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('show') }
 
-document.getElementById('submissionForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const d = DATA;
 
-  let valid = true;
-  const banner = document.getElementById('formErrorBanner');
+  // Header
+  document.getElementById('n-reviews').textContent = d.total_reviews.toLocaleString();
+  document.getElementById('last-updated').textContent = 'Updated: ' + (d.last_updated || 'unknown');
 
-  // Check placements
-  const anySelected = Array.from(checkboxes).some(cb => cb.checked);
-  if (!anySelected) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    valid = false;
-  }
+  // Tiles
+  document.getElementById('tile-reviews').textContent = (d.total_reviews / 1000).toFixed(1) + 'k';
+  document.getElementById('tile-markets').textContent = (d.markets_processed || []).length + ' markets · ' + (d.reviews_per_market ? Object.keys(d.reviews_per_market).join(', ') : '');
+  document.getElementById('tile-hospitals').textContent = d.unique_hospitals || '—';
+  document.getElementById('tile-r2').textContent = d.r_squared ? d.r_squared.toFixed(2) : '—';
+  const patCoef = d.regression?.coef_is_patient;
+  document.getElementById('tile-patient').textContent = patCoef ? '+' + patCoef.toFixed(2) : '—';
+  const lenCoef = d.regression?.coef_review_length;
+  document.getElementById('tile-length').textContent = lenCoef ? lenCoef.toFixed(4) : '—';
 
-  // Required text fields
-  const fields = [
-    { id: 'firstName',  fgId: 'fg-firstname', check: v => v.length > 0 },
-    { id: 'lastName',   fgId: 'fg-lastname',  check: v => v.length > 0 },
-    { id: 'email',      fgId: 'fg-email',     check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
-    { id: 'brandName',  fgId: 'fg-brand',     check: v => v.length > 0 },
-    { id: 'website',    fgId: 'fg-website',   check: v => v.length > 0 },
-    { id: 'category',   fgId: 'fg-category',  check: v => v.length > 0 },
-    { id: 'bio',        fgId: 'fg-bio',       check: v => v.length > 20 },
+  // Market grid
+  const ALL_MARKETS = [
+    { name: "San Francisco", emoji: "🌉", expected: 18000 },
+    { name: "Sacramento", emoji: "🏛️", expected: 18400 },
+    { name: "Oakland", emoji: "🌉", expected: 14800 },
+    { name: "San Jose", emoji: "💻", expected: 8500 },
   ];
+  const processed = new Set(d.markets_processed || []);
+  const rpm = d.reviews_per_market || {};
+  document.getElementById('market-grid').innerHTML = ALL_MARKETS.map(m => {
+    const done = processed.has(m.name) || processed.has(m.name.split(' ')[0]);
+    const count = rpm[m.name] || (done ? '~' + m.expected.toLocaleString() : '~' + m.expected.toLocaleString());
+    return `<div class="market-card">
+      <span class="market-icon">${m.emoji}</span>
+      <div><div class="market-name">${m.name}</div><div class="market-count">${typeof count === 'number' ? count.toLocaleString() : count} reviews</div></div>
+      <span class="status-pill ${done ? 'status-done' : 'status-pending'}">${done ? '✓ done' : 'pending'}</span>
+    </div>`;
+  }).join('');
 
-  fields.forEach(f => {
-    if (!validateField(f.id, f.fgId, f.check)) valid = false;
+  // Hospital type chart
+  renderHospTypeChart(d);
+
+  // Role chart
+  renderRoleChart(d);
+
+  // Interaction chart
+  renderInteractionChart(d);
+
+  // Review length chart
+  renderLengthChart(d);
+
+  // Regression table
+  renderRegTable(d);
+
+  // Narrative
+  document.getElementById('narrative').textContent = d.narrative || 'No narrative available.';
+  document.getElementById('narrative').classList.remove('loading');
+}
+
+// ── Hospital type bar chart ───────────────────────────────────────────────────
+function renderHospTypeChart(d) {
+  const container = document.getElementById('hosp-type-chart');
+  const ratings = d.hospital_type_ratings || {};
+  const sorted = Object.entries(ratings).sort((a, b) => b[1] - a[1]);
+  const max = 5;
+  container.innerHTML = sorted.map(([type, val]) => {
+    const pct = (val / max * 100).toFixed(1);
+    const color = TYPE_COLORS[type] || '#64748b';
+    return `<div class="bar-row" data-tip="${type}: ${val.toFixed(2)} ★">
+      <div class="bar-label">${type}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${color}" data-tip="${type}: ${val.toFixed(2)} ★"></div>
+      </div>
+      <div class="bar-val">${val.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  // Attach tooltips
+  container.querySelectorAll('[data-tip]').forEach(el => {
+    el.addEventListener('mousemove', e => { showTooltip(e, el.dataset.tip); moveTooltip(e) });
+    el.addEventListener('mouseleave', hideTooltip);
   });
+}
 
-  // Portfolio link
-  const portfolioVal = document.getElementById('portfolioLink').value.trim();
-  const portfolioFg = document.getElementById('fg-portfolio');
-  if (!portfolioVal) {
-    portfolioFg.classList.add('error');
-    valid = false;
-  } else {
-    portfolioFg.classList.remove('error');
-  }
-
-  // Wholesale confirm
-  const ws = document.getElementById('wholesaleConfirm');
-  const wsErr = document.getElementById('wholesaleError');
-  if (!ws.checked) {
-    wsErr.style.display = 'block';
-    valid = false;
-  } else {
-    wsErr.style.display = 'none';
-  }
-
-  if (!valid) {
-    banner.classList.add('show');
-    const firstError = document.querySelector('.field-group.error, #uploadError');
-    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-
-
-  banner.classList.remove('show');
-
-  // ── DYNAMIC STRIPE CHECKOUT ──
-  // Build line items from selected placements
-  const selectedItems = Array.from(checkboxes)
-    .filter(cb => cb.checked)
-    .map(cb => ({ name: cb.dataset.name, price: parseInt(cb.dataset.price) }));
-
-  const email = document.getElementById('email').value.trim();
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const brandName = document.getElementById('brandName').value.trim();
-
-  // Show loading state
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span style="opacity:0.6">Processing...</span>';
-
-  // Call Netlify serverless function
-  fetch('/.netlify/functions/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      items: selectedItems,
-      email: email,
-      customerName: firstName + ' ' + lastName,
-      brandName: brandName,
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert('Payment setup failed: ' + (data.error || 'Unknown error'));
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = 'Proceed to Payment <span class="arrow">&#8594;</span>';
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Something went wrong. Please try again or contact ensetventures@gmail.com');
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = 'Proceed to Payment <span class="arrow">&#8594;</span>';
+// ── Role chart ────────────────────────────────────────────────────────────────
+function renderRoleChart(d) {
+  const container = document.getElementById('role-chart');
+  const roles = d.avg_rating_by_role || {};
+  const ROLE_LABELS = { patient: 'Patient', caretaker: 'Caretaker', 'patient/caretaker': 'Both', unclear: 'Unclear' };
+  const ROLE_COLORS = { patient: '#16a34a', caretaker: '#dc2626', 'patient/caretaker': '#d97706', unclear: '#64748b' };
+  const items = Object.entries(roles).filter(([k]) => k in ROLE_LABELS);
+  items.sort((a, b) => b[1] - a[1]);
+  const max = 5;
+  container.innerHTML = items.map(([role, val]) => {
+    const pct = (val / max * 100).toFixed(1);
+    const color = ROLE_COLORS[role] || '#64748b';
+    const label = ROLE_LABELS[role] || role;
+    return `<div class="bar-row" data-tip="${label}: ${val.toFixed(2)} ★">
+      <div class="bar-label">${label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${color}"></div>
+      </div>
+      <div class="bar-val">${val.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('[data-tip]').forEach(el => {
+    el.addEventListener('mousemove', e => { showTooltip(e, el.dataset.tip); moveTooltip(e) });
+    el.addEventListener('mouseleave', hideTooltip);
   });
-});
+}
 
-// Clear errors on input
-document.querySelectorAll('input, select, textarea').forEach(el => {
-  el.addEventListener('input', () => {
-    el.closest('.field-group')?.classList.remove('error');
+// ── Interaction dot plot ──────────────────────────────────────────────────────
+function renderInteractionChart(d) {
+  const container = document.getElementById('interaction-chart');
+  const gr = d.avg_rating_by_gender_role || {};
+  const roles = ['patient', 'caretaker'];
+  const allVals = Object.values(gr).filter(v => typeof v === 'number');
+  const minV = Math.min(...allVals, 2.5);
+  const maxV = Math.max(...allVals, 4.5);
+  const pct = v => ((v - minV) / (maxV - minV) * 100).toFixed(1) + '%';
+  container.innerHTML = roles.map(role => {
+    const mKey = 'male_' + role;
+    const fKey = 'female_' + role;
+    const mVal = gr[mKey];
+    const fVal = gr[fKey];
+    const label = role === 'patient' ? 'Patient' : 'Caretaker';
+    const dots = [];
+    if (mVal != null) dots.push(`<div class="dot-mark" style="left:${pct(mVal)};background:#2563eb" data-tip="Male ${label}: ${mVal.toFixed(2)} ★"></div>`);
+    if (fVal != null) dots.push(`<div class="dot-mark" style="left:${pct(fVal)};background:#db2777" data-tip="Female ${label}: ${fVal.toFixed(2)} ★"></div>`);
+    return `<div class="dot-group">
+      <div class="dot-label">${label}</div>
+      <div class="dot-track">
+        <div class="dot-track-line"></div>
+        ${dots.join('')}
+      </div>
+      <div class="dot-val">${mVal ? mVal.toFixed(2) : '—'}</div>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('[data-tip]').forEach(el => {
+    el.addEventListener('mousemove', e => { showTooltip(e, el.dataset.tip); moveTooltip(e) });
+    el.addEventListener('mouseleave', hideTooltip);
   });
-});
+}
+
+// ── Review length chart ───────────────────────────────────────────────────────
+function renderLengthChart(d) {
+  const container = document.getElementById('length-chart');
+  const buckets = d.review_length_buckets;
+  if (!buckets) { container.textContent = 'No data.'; return; }
+  const maxVal = 5;
+  container.innerHTML = buckets.map((b, i) => {
+    const pct = (b.mean / maxVal * 100).toFixed(1);
+    const sdPct = (b.sd / maxVal * 100).toFixed(1);
+    const shade = `hsl(${220 - i * 24}, 70%, ${55 + i * 5}%)`;
+    return `<div class="bar-row" data-tip="${b.label} chars: ${b.mean.toFixed(2)} ★ (±${b.sd.toFixed(2)})">
+      <div class="bar-label" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem">${b.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${shade}"></div>
+      </div>
+      <div class="bar-val">${b.mean.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('[data-tip]').forEach(el => {
+    el.addEventListener('mousemove', e => { showTooltip(e, el.dataset.tip); moveTooltip(e) });
+    el.addEventListener('mouseleave', hideTooltip);
+  });
+}
+
+// ── Regression table ──────────────────────────────────────────────────────────
+function renderRegTable(d) {
+  const r = d.regression || {};
+  const rows = [
+    { label: 'Reviewer is patient', coef: r.coef_is_patient, pval: r.pval_is_patient, desc: 'vs. caretaker' },
+    { label: 'Reviewer is male', coef: r.coef_is_male, pval: r.pval_is_male, desc: 'vs. female' },
+    { label: 'Patient × Male (interaction)', coef: r['coef_is_patient:is_male'], pval: r['pval_is_patient:is_male'], desc: 'gender effect conditional on role' },
+    { label: 'Review length', coef: r.coef_review_length, pval: r.pval_review_length, desc: 'per character' },
+  ];
+  const sigClass = p => p == null ? '' : p < 0.001 ? 'sig' : p < 0.05 ? 'sig' : 'ns';
+  const sigLabel = p => p == null ? '—' : p < 0.001 ? '***' : p < 0.01 ? '**' : p < 0.05 ? '*' : 'n.s.';
+  const pbar = p => {
+    if (p == null) return '';
+    const w = Math.min(80, Math.max(4, (1 - p) * 80));
+    return `<span class="pval-bar" style="width:${w}px;opacity:${p < 0.05 ? 1 : 0.3}"></span>`;
+  };
+  document.getElementById('reg-table-wrap').innerHTML = `
+    <table class="reg-table">
+      <thead><tr>
+        <th>Variable</th>
+        <th>Coeff.</th>
+        <th>p-value</th>
+        <th>Sig.</th>
+        <th>Note</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(row => `<tr>
+          <td style="font-weight:500">${row.label}</td>
+          <td class="${row.coef != null && row.coef > 0 ? 'sig' : row.coef != null && row.coef < 0 ? 'bad' : ''}">${row.coef != null ? (row.coef > 0 ? '+' : '') + row.coef.toFixed(4) : '—'}</td>
+          <td class="${sigClass(row.pval)}">${row.pval != null ? row.pval.toFixed(4) : '—'}${pbar(row.pval)}</td>
+          <td class="${sigClass(row.pval)}">${sigLabel(row.pval)}</td>
+          <td style="color:var(--fg3)">${row.desc}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="font-size:0.68rem;color:var(--fg3);margin-top:10px">* p&lt;0.05 &nbsp; ** p&lt;0.01 &nbsp; *** p&lt;0.001 &nbsp; · &nbsp; Pooled OLS with hospital type fixed effects · n = ${d.total_reviews?.toLocaleString() || '—'} · R² = ${d.r_squared || '—'}</div>`;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+loadData();
 </script>
-</body>
-</html>
