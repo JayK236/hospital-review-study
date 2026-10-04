@@ -1,0 +1,102 @@
+{
+  "last_updated": "2026-10-03T23:56:30.021377",
+  "total_reviews": 27087,
+  "unique_hospitals": 39,
+  "markets_processed": [
+    "Sacramento",
+    "San Francisco",
+    "Unknown"
+  ],
+  "reviews_per_market": {
+    "Sacramento": 18420,
+    "San Francisco": 8302,
+    "Unknown": 365
+  },
+  "overall_avg_rating": 3.698,
+  "avg_rating_by_role": {
+    "caretaker": 2.862,
+    "error": 3.624,
+    "patient": 3.892,
+    "patient/caretaker": 3.813,
+    "patient/caretaker/unclear": 3.791,
+    "unclear": 4.087
+  },
+  "avg_rating_by_gender_role": {
+    "error_error": 3.624,
+    "female_caretaker": 3.061,
+    "female_patient": 3.958,
+    "female_patient_caretaker": 3.975,
+    "female_patient_caretaker_unclear": 4.03,
+    "female_unclear": 4.326,
+    "female/unclear_caretaker": 2.355,
+    "female/unclear_patient": 3.904,
+    "female/unclear_patient_caretaker": 3.409,
+    "female/unclear_patient_caretaker_unclear": 2.997,
+    "female/unclear_unclear": 3.879,
+    "male_caretaker": 2.696,
+    "male_patient": 3.958,
+    "male_patient_caretaker": 4.085,
+    "male_patient_caretaker_unclear": 3.928,
+    "male_unclear": 4.213,
+    "male/female/unclear_caretaker": 3.024,
+    "male/female/unclear_patient": 3.495,
+    "male/female/unclear_patient_caretaker": 3.0,
+    "male/female/unclear_patient_caretaker_unclear": 3.842,
+    "male/female/unclear_unclear": 3.633,
+    "male/unclear_patient_caretaker_unclear": 3.0,
+    "unclear_caretaker": 2.535,
+    "unclear_patient": 3.493,
+    "unclear_patient_caretaker": 2.435,
+    "unclear_patient_caretaker_unclear": 3.008,
+    "unclear_unclear": 3.494
+  },
+  "review_length_buckets": [
+    {
+      "label": "0\u2013100",
+      "mean": 4.351,
+      "sd": 1.37
+    },
+    {
+      "label": "101\u2013300",
+      "mean": 4.066,
+      "sd": 1.601
+    },
+    {
+      "label": "301\u2013600",
+      "mean": 3.224,
+      "sd": 1.875
+    },
+    {
+      "label": "601\u20131000",
+      "mean": 2.658,
+      "sd": 1.853
+    },
+    {
+      "label": "1000+",
+      "mean": 2.172,
+      "sd": 1.659
+    }
+  ],
+  "hospital_type_ratings": {
+    "Kaiser": 4.689,
+    "Long Term Acute": 3.736,
+    "Other": 3.645,
+    "Private Nonprofit": 3.543,
+    "Psychiatric": 1.814,
+    "Public Academic": 2.933,
+    "Safety Net": 4.174,
+    "VA": 3.916
+  },
+  "r_squared": 0.2437,
+  "regression": {
+    "coef_is_patient": 0.242717,
+    "pval_is_patient": 0.0,
+    "coef_is_male": -0.008703,
+    "pval_is_male": 0.755655,
+    "coef_is_patient:is_male": -0.063866,
+    "pval_is_patient:is_male": 0.104922,
+    "coef_review_length": -0.001039,
+    "pval_review_length": 0.0
+  },
+  "narrative": "## Findings Update\n\nThe current dataset comprises **27,087 Google reviews** spanning **39 unique hospitals** across two primary California markets (Sacramento and San Francisco), with a small residual \"Unknown\" category (n = 365). Sacramento accounts for the majority of reviews (18,420; 68.0%), while San Francisco contributes 8,302 (30.6%). The sample covers a range of hospital types including private nonprofit, public academic, safety net, VA, psychiatric, long-term acute, and other facility categories.\n\nThe pooled OLS regression (R\u00b2 = 0.244, n = 27,087) reveals several robust findings. Hospital type is a strong predictor of star rating: relative to the omitted reference category, psychiatric hospitals carry the largest negative coefficient (\u22122.459), followed by public academic hospitals (\u22121.579), private nonprofit hospitals (\u22121.001), and VA hospitals (\u22120.686). Reviewer role is a highly significant predictor: patients rate hospitals **0.243 stars higher** than non-patients (p < 0.001). The gender \u00d7 role interaction (male patient vs. baseline) is \u22120.064 (p = 0.105), which does not reach conventional significance thresholds \u2014 the model shows no statistically reliable differential rating behavior for male patients relative to the reference group after accounting for main effects. Review length exerts a consistent negative effect on rating (\u03b2 = \u22120.001039, p < 0.001), meaning each additional character in a review is associated with a lower star rating; translating across the observed length distribution, reviews exceeding 1,000 characters average 2.17 stars compared to 4.35 stars for reviews under 100 characters \u2014 a gap of more than two full stars confirmed by the bucket-level descriptives.\n\nThe patient versus caretaker rating gap is substantive and consistent across gender subgroups. Caretakers average **2.862 stars** overall versus **3.892 stars** for patients \u2014 a raw gap of 1.03 stars \u2014 and this pattern holds within both female (3.061 vs. 3.958) and male (2.696 vs. 3.958) subgroups. Caretakers writing longer, more negative reviews likely also contribute to the review-length\u2013rating correlation (r = \u22120.314), suggesting that dissatisfied caretakers are a structurally distinct and disproportionately critical reviewer population.\n\n---\n\n## Changes from Previous Run\n\n**Not applicable.** This is the first synthesis run. No prior coefficients, sample sizes, or market coverage exist for comparison.\n\n---\n\n## Missing Data / Next Steps\n\nThe following gaps warrant attention:\n\n- **Markets not yet processed:** No reviews from **Los Angeles**, **San Diego**, **Inland Empire**, **Fresno/Central Valley**, **Oakland/East Bay**, or other major California hospital markets appear in the dataset. These represent the majority of California's hospital volume and population by OSHPD/HCAI counts.\n- **\"Unknown\" market classification (n = 365):** These reviews cannot be attributed to a market and may introduce noise into any market-level analysis. Resolving hospital-to-market mapping for these records should be a near-term priority.\n- **What would change results most if added:** Adding Los Angeles \u2014 California's largest hospital market with several high-volume safety net, public academic (e.g., LAC+USC), and private systems \u2014 would most substantially alter the hospital-type coefficients and the overall intercept. LA's safety net and public academic hospitals likely generate review patterns distinct from Sacramento and SF, and their inclusion could shift the psychiatric and public academic penalties meaningfully. A Southern California expansion would also improve the generalizability of the gender \u00d7 role interaction, which currently lacks significance and may be underpowered for subgroup detection.\n- **Hospital-type reference category** should be explicitly documented for reproducibility; current output does not name the omitted category, making coefficient interpretation contingent on that assumption.\n\n---\n\n## Abstract Sentence\n\n> In a pooled OLS analysis of **27,087 Google reviews** across 39 California hospitals (Sacramento and San Francisco markets), caretakers rated hospitals more than one star lower than patients (raw gap: 1.03 stars; regression-adjusted patient coefficient: +0.243, p < 0.001), review length was inversely associated with rating (\u03b2 = \u22120.001, p < 0.001), and psychiatric and public academic hospital types carried the largest negative rating penalties (\u22122.46 and \u22121.58, respectively), together explaining 24.4% of variance in star ratings."
+}
